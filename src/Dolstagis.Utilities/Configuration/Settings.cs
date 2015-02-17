@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 
 namespace Dolstagis.Utilities.Configuration
 {
     public static class Settings
     {
-        private static readonly IList<ISettingsSource> _sources
-            = new List<ISettingsSource>();
+        private static readonly SettingsCache _cache = new SettingsCache();
+
+        private static ISettingsSource Source { get; set; }
 
         public static TSettings Get<TSettings>()
         {
-            return default(TSettings);
-        }
-
-        public static IList<ISettingsSource> Sources
-        {
-            get { return _sources; }
+            return _cache.GetSettings<TSettings>(Source);
         }
     }
 }

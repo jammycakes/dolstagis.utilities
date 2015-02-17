@@ -41,6 +41,8 @@
   <ItemGroup>
     <Compile Include="Configuration\ISettingsSource.cs" />
     <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Configuration\SettingsBuilder.cs" />
+    <Compile Include="Configuration\SettingsCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
