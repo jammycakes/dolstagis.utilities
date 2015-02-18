@@ -12,5 +12,13 @@ namespace Dolstagis.Utilities.Tests.Configuration
         string StringSetting { get; }
 
         int IntSetting { get; }
+
+        bool BoolSetting { get; }
+
+        DateTime DateTimeSetting { get; }
+
+        long LongSetting { get; }
+
+        double DoubleSetting { get; }
     }
 }
