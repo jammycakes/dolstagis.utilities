@@ -108,5 +108,21 @@ namespace Dolstagis.Utilities.Tests.Configuration
             Assert.AreEqual(new DateTime(2015, 2, 18, 21, 24, 10), settings.DateTimeSetting);
             source.Verify(x => x.GetDateTime("Test", "DateTimeSetting"), Times.Once, "Source was not called correctly");
         }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void MethodCallsShouldThrowNotSupportedExceptionWhenCalled()
+        {
+            settings.DoSomethingUnsupported();
+        }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void PropertiesWithUnsupportedTypesShouldThrowNotSupportedExceptionWhenGetterCalled()
+        {
+            var obj = settings.NotSupportedTypeSetting;
+            if (obj != null)
+                Assert.Fail();
+        }
     }
 }

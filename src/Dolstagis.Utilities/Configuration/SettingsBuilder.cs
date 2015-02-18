@@ -57,17 +57,45 @@ namespace Dolstagis.Utilities.Configuration
             constructorIL.Emit(OpCodes.Ldarg_0);
             constructorIL.Emit(OpCodes.Call, parentConstructor);
 
+            var implementedMethods = new HashSet<MethodInfo>();
+
             foreach (var prop in parentType.GetProperties()) {
                 var getter = prop.GetGetMethod();
                 if (getter != null && getter.IsVirtual) {
                     var field = ImplementBackingField(prop, getter);
-                    ImplementBackingFieldInit(prop, field);
-                    ImplementGetter(prop, getter, field);
+                    if (ImplementBackingFieldInit(prop, field)) {
+                        ImplementGetter(prop, getter, field);
+                    }
+                    else {
+                        ImplementNotSupportedMethod(getter);
+                    }
+                    implementedMethods.Add(getter);
                 }
+            }
+
+            foreach (var method in parentType.GetMethods()) {
+                if (method.IsAbstract && !implementedMethods.Contains(method)) {
+                    ImplementNotSupportedMethod(method);
+                } 
             }
 
             constructorIL.Emit(OpCodes.Ret);
             return typeBuilder.CreateType();
+        }
+
+        private void ImplementNotSupportedMethod(MethodInfo method)
+        {
+            var newMethod = typeBuilder.DefineMethod(method.Name,
+                MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.HideBySig
+                | MethodAttributes.NewSlot | MethodAttributes.Virtual,
+                method.CallingConvention,
+                method.ReturnType,
+                method.GetParameters().Select(x => x.ParameterType).ToArray()
+            );
+            var il = newMethod.GetILGenerator();
+            il.Emit(OpCodes.Newobj, typeof(NotSupportedException).GetConstructor(Type.EmptyTypes));
+            il.Emit(OpCodes.Throw);
+            typeBuilder.DefineMethodOverride(newMethod, method);
         }
 
         private FieldBuilder ImplementBackingField(PropertyInfo prop, MethodInfo getter)
@@ -93,20 +121,21 @@ namespace Dolstagis.Utilities.Configuration
             return methods.FirstOrDefault(x => x.ReturnType == type);
         }
 
-        private void ImplementBackingFieldInit(PropertyInfo prop, FieldBuilder backingField)
+        private bool ImplementBackingFieldInit(PropertyInfo prop, FieldBuilder backingField)
         {
             var settingsSourceMethod = GetSettingsSourceMethod(prop.PropertyType);
-            if (settingsSourceMethod == null) {
-                throw new NotSupportedException
-                    ("Configuration properties of type " + prop.PropertyType.FullName + " are not supported.");
+            if (settingsSourceMethod != null) {
+                constructorIL.Emit(OpCodes.Ldarg_0);
+                constructorIL.Emit(OpCodes.Ldarg_1);
+                constructorIL.Emit(OpCodes.Ldstr, prefix);
+                constructorIL.Emit(OpCodes.Ldstr, prop.Name);
+                constructorIL.Emit(OpCodes.Callvirt, GetSettingsSourceMethod(prop.PropertyType));
+                constructorIL.Emit(OpCodes.Stfld, backingField);
+                return true;
             }
-
-            constructorIL.Emit(OpCodes.Ldarg_0);
-            constructorIL.Emit(OpCodes.Ldarg_1);
-            constructorIL.Emit(OpCodes.Ldstr, prefix);
-            constructorIL.Emit(OpCodes.Ldstr, prop.Name);
-            constructorIL.Emit(OpCodes.Callvirt, GetSettingsSourceMethod(prop.PropertyType));
-            constructorIL.Emit(OpCodes.Stfld, backingField);
+            else {
+                return false;
+            }
         }
 
         private void ImplementGetter(PropertyInfo prop, MethodInfo getter, FieldBuilder backingField)

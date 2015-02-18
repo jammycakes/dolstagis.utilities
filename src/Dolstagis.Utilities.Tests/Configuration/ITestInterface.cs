@@ -20,5 +20,9 @@ namespace Dolstagis.Utilities.Tests.Configuration
         long LongSetting { get; }
 
         double DoubleSetting { get; }
+
+        IEmpty NotSupportedTypeSetting { get; }
+
+        void DoSomethingUnsupported();
     }
 }
