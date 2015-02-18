@@ -40,11 +40,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\ISettingsSource.cs" />
+    <Compile Include="Configuration\PrefixAttribute.cs" />
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Configuration\SettingsBuilder.cs" />
-    <Compile Include="Configuration\SettingsCache.cs" />
+    <Compile Include="Configuration\SettingsCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

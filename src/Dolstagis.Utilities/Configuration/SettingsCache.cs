@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Dolstagis.Utilities.Configuration
 {
-    internal class SettingsCache
+    public class SettingsCache
     {
         private IDictionary<Type, object> cache = new Dictionary<Type, object>();
         private ModuleBuilder module;
@@ -28,13 +28,18 @@ namespace Dolstagis.Utilities.Configuration
             return result;
         }
 
+        public static ModuleBuilder CreateModule()
+        {
+            var assemblyName = new AssemblyName(Guid.NewGuid().ToString());
+            var appDomain = Thread.GetDomain();
+            var assemblyBuilder = appDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+            return assemblyBuilder.DefineDynamicModule(Guid.NewGuid().ToString());
+        }
+
         private ModuleBuilder GetModule()
         {
             if (module == null) {
-                var assemblyName = new AssemblyName("__<>generated.Dolstagis.Utilities.Configuration");
-                var appDomain = Thread.GetDomain();
-                var assemblyBuilder = appDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-                module = assemblyBuilder.DefineDynamicModule("__<>generated");
+                module = CreateModule();
             }
             return module;
         }
