@@ -90,12 +90,17 @@ namespace Dolstagis.Utilities.Configuration
                     && m.Name.StartsWith("Get")
                 select m;
 
-            return methods.FirstOrDefault(x => x.ReturnType == type)
-                ?? methods.FirstOrDefault(x => x.ReturnType == typeof(object));
+            return methods.FirstOrDefault(x => x.ReturnType == type);
         }
 
         private void ImplementBackingFieldInit(PropertyInfo prop, FieldBuilder backingField)
         {
+            var settingsSourceMethod = GetSettingsSourceMethod(prop.PropertyType);
+            if (settingsSourceMethod == null) {
+                throw new NotSupportedException
+                    ("Configuration properties of type " + prop.PropertyType.FullName + " are not supported.");
+            }
+
             constructorIL.Emit(OpCodes.Ldarg_0);
             constructorIL.Emit(OpCodes.Ldarg_1);
             constructorIL.Emit(OpCodes.Ldstr, prefix);

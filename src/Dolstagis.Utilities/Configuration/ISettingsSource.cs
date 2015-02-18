@@ -18,7 +18,5 @@ namespace Dolstagis.Utilities.Configuration
         long GetLong(string ns, string name);
 
         double GetDouble(string ns, string name);
-
-        object GetObject(string ns, string name);
     }
 }
