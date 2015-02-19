@@ -40,6 +40,11 @@ namespace Dolstagis.Utilities.Tests.Configuration
         [DefaultValue(10)]
         long LongSettingWithDefault { get; }
 
+        short ShortSetting { get; }
+
+        [DefaultValue(16384)]
+        short ShortSettingWithDefault { get; }
+
         string StringSetting { get; }
 
         [DefaultValue("default")]

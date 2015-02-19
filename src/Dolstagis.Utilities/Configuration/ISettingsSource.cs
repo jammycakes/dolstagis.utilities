@@ -31,6 +31,10 @@ namespace Dolstagis.Utilities.Configuration
 
         long GetLong(string ns, string name, long defaultValue);
 
+        short GetShort(string p1, string p2);
+
+        short GetShort(string p1, string p2, short p3);
+
         string GetString(string ns, string name);
 
         string GetString(string ns, string name, string defaultValue);

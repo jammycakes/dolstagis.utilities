@@ -34,6 +34,7 @@ namespace Dolstagis.Utilities.Tests.Configuration
             source.Setup(x => x.GetDouble("Test", "DoubleSetting")).Returns(Math.PI);
             source.Setup(x => x.GetInt("Test", "IntSetting")).Returns(15);
             source.Setup(x => x.GetLong("Test", "LongSetting")).Returns(0x10000000000);
+            source.Setup(x => x.GetShort("Test", "ShortSetting")).Returns(16384);
             source.Setup(x => x.GetString("Test", "StringSetting")).Returns("test");
 
             source.Setup(x => x.GetBool(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
@@ -48,6 +49,8 @@ namespace Dolstagis.Utilities.Tests.Configuration
                 .Returns<string, string, Int32>((a, b, c) => c);
             source.Setup(x => x.GetLong(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Int64>()))
                 .Returns<string, string, Int64>((a, b, c) => c);
+            source.Setup(x => x.GetShort(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Int16>()))
+                .Returns<string, string, Int16>((a, b, c) => c);
             source.Setup(x => x.GetString(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<string, string, string>((a, b, c) => c);
 
@@ -184,6 +187,20 @@ namespace Dolstagis.Utilities.Tests.Configuration
         {
             Assert.AreEqual(10L, settings.LongSettingWithDefault);
             source.Verify(x => x.GetLong("Test", "LongSettingWithDefault", 10), Times.Once);
+        }
+
+        [Test]
+        public void ShortSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual(16384, settings.ShortSetting);
+            source.Verify(x => x.GetShort("Test", "ShortSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void ShortSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(16384, settings.ShortSettingWithDefault);
+            source.Verify(x => x.GetShort("Test", "ShortSettingWithDefault", 16384), Times.Once);
         }
 
         [Test]
