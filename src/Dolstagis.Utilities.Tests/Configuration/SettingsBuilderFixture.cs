@@ -28,24 +28,25 @@ namespace Dolstagis.Utilities.Tests.Configuration
         private void Arrange()
         {
             source = new Mock<ISettingsSource>();
-            source.Setup(x => x.GetString("Test", "StringSetting")).Returns("test");
-            source.Setup(x => x.GetInt("Test", "IntSetting")).Returns(15);
             source.Setup(x => x.GetBool("Test", "BoolSetting")).Returns(true);
-            source.Setup(x => x.GetDouble("Test", "DoubleSetting")).Returns(Math.PI);
-            source.Setup(x => x.GetLong("Test", "LongSetting")).Returns(0x10000000000);
             source.Setup(x => x.GetDateTime("Test", "DateTimeSetting")).Returns(new DateTime(2015, 2, 18, 21, 24, 10));
-            source.Setup(x => x.GetString(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns<string, string, string>((a, b, c) => c);
+            source.Setup(x => x.GetDouble("Test", "DoubleSetting")).Returns(Math.PI);
+            source.Setup(x => x.GetInt("Test", "IntSetting")).Returns(15);
+            source.Setup(x => x.GetLong("Test", "LongSetting")).Returns(0x10000000000);
+            source.Setup(x => x.GetString("Test", "StringSetting")).Returns("test");
+
+            source.Setup(x => x.GetBool(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns<string, string, bool>((a, b, c) => c);
+            source.Setup(x => x.GetDateTime(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns<string, string, DateTime>((a, b, c) => c);
+            source.Setup(x => x.GetDouble(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>()))
+                .Returns<string, string, double>((a, b, c) => c);
             source.Setup(x => x.GetInt(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Int32>()))
                 .Returns<string, string, Int32>((a, b, c) => c);
             source.Setup(x => x.GetLong(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Int64>()))
                 .Returns<string, string, Int64>((a, b, c) => c);
-            source.Setup(x => x.GetBool(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-                .Returns<string, string, bool>((a, b, c) => c);
-            source.Setup(x => x.GetDouble(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>()))
-                .Returns<string, string, double>((a, b, c) => c);
-            source.Setup(x => x.GetDateTime(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns<string, string, DateTime>((a, b, c) => c);
+            source.Setup(x => x.GetString(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns<string, string, string>((a, b, c) => c);
 
             module = SettingsCache.CreateModule();
             settingsBuilder = new SettingsBuilder<ITestInterface>(module);
@@ -78,49 +79,6 @@ namespace Dolstagis.Utilities.Tests.Configuration
             Assert.IsInstanceOf<ITestInterface>(settings);
         }
 
-
-        [Test]
-        public void StringSettingIsRetrievedCorrectly()
-        {
-            Assert.AreEqual("test", settings.StringSetting);
-            source.Verify(x => x.GetString("Test", "StringSetting"), Times.Once, "Source was not called correctly");
-        }
-
-        [Test]
-        public void IntSettingIsRetrievedCorrectly()
-        {
-            Assert.AreEqual(15, settings.IntSetting);
-            source.Verify(x => x.GetInt("Test", "IntSetting"), Times.Once, "Source was not called correctly");
-        }
-
-        [Test]
-        public void BoolSettingIsRetrievedCorrectly()
-        {
-            Assert.AreEqual(true, settings.BoolSetting);
-            source.Verify(x => x.GetBool("Test", "BoolSetting"), Times.Once, "Source was not called correctly");
-        }
-
-        [Test]
-        public void DoubleSettingIsRetrievedCorrectly()
-        {
-            Assert.AreEqual(Math.PI, settings.DoubleSetting);
-            source.Verify(x => x.GetDouble("Test", "DoubleSetting"), Times.Once, "Source was not called correctly");
-        }
-
-        [Test]
-        public void LongSettingIsRetrievedCorrectly()
-        {
-            Assert.AreEqual(0x10000000000, settings.LongSetting);
-            source.Verify(x => x.GetLong("Test", "LongSetting"), Times.Once, "Source was not called correctly");
-        }
-
-        [Test]
-        public void DateTimeSettingIsRetrievedCorrectly()
-        {
-            Assert.AreEqual(new DateTime(2015, 2, 18, 21, 24, 10), settings.DateTimeSetting);
-            source.Verify(x => x.GetDateTime("Test", "DateTimeSetting"), Times.Once, "Source was not called correctly");
-        }
-
         [Test]
         [ExpectedException(typeof(NotSupportedException))]
         public void MethodCallsShouldThrowNotSupportedExceptionWhenCalled()
@@ -137,24 +95,12 @@ namespace Dolstagis.Utilities.Tests.Configuration
                 Assert.Fail();
         }
 
-        [Test]
-        public void StringSettingWithDefaultValueIsReturnedCorrectly()
-        {
-            Assert.AreEqual("default", settings.StringSettingWithDefault);
-            source.Verify(x => x.GetString("Test", "StringSettingWithDefault", "default"), Times.Once);
-        }
-        [Test]
-        public void IntSettingWithDefaultValueIsReturnedCorrectly()
-        {
-            Assert.AreEqual(10, settings.IntSettingWithDefault);
-            source.Verify(x => x.GetInt("Test", "IntSettingWithDefault", 10), Times.Once);
-        }
 
         [Test]
-        public void LongSettingWithDefaultValueIsReturnedCorrectly()
+        public void BoolSettingIsRetrievedCorrectly()
         {
-            Assert.AreEqual(10L, settings.LongSettingWithDefault);
-            source.Verify(x => x.GetLong("Test", "LongSettingWithDefault", 10), Times.Once);
+            Assert.AreEqual(true, settings.BoolSetting);
+            source.Verify(x => x.GetBool("Test", "BoolSetting"), Times.Once, "Source was not called correctly");
         }
 
         [Test]
@@ -165,10 +111,10 @@ namespace Dolstagis.Utilities.Tests.Configuration
         }
 
         [Test]
-        public void DoubleSettingWithDefaultValueIsReturnedCorrectly()
+        public void DateTimeSettingIsRetrievedCorrectly()
         {
-            Assert.AreEqual(Math.PI, settings.DoubleSettingWithDefault);
-            source.Verify(x => x.GetDouble("Test", "DoubleSettingWithDefault", Math.PI), Times.Once);
+            Assert.AreEqual(new DateTime(2015, 2, 18, 21, 24, 10), settings.DateTimeSetting);
+            source.Verify(x => x.GetDateTime("Test", "DateTimeSetting"), Times.Once, "Source was not called correctly");
         }
 
         [Test]
@@ -177,6 +123,62 @@ namespace Dolstagis.Utilities.Tests.Configuration
             var dt = new DateTime(2015, 1, 1, 12, 34, 56);
             Assert.AreEqual(dt, settings.DateTimeSettingWithDefault);
             source.Verify(x => x.GetDateTime("Test", "DateTimeSettingWithDefault", dt), Times.Once);
+        }
+
+        [Test]
+        public void DoubleSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual(Math.PI, settings.DoubleSetting);
+            source.Verify(x => x.GetDouble("Test", "DoubleSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void DoubleSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(Math.PI, settings.DoubleSettingWithDefault);
+            source.Verify(x => x.GetDouble("Test", "DoubleSettingWithDefault", Math.PI), Times.Once);
+        }
+
+        [Test]
+        public void IntSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual(15, settings.IntSetting);
+            source.Verify(x => x.GetInt("Test", "IntSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void IntSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(10, settings.IntSettingWithDefault);
+            source.Verify(x => x.GetInt("Test", "IntSettingWithDefault", 10), Times.Once);
+        }
+
+        [Test]
+        public void LongSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual(0x10000000000, settings.LongSetting);
+            source.Verify(x => x.GetLong("Test", "LongSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void LongSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(10L, settings.LongSettingWithDefault);
+            source.Verify(x => x.GetLong("Test", "LongSettingWithDefault", 10), Times.Once);
+        }
+
+        [Test]
+        public void StringSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual("test", settings.StringSetting);
+            source.Verify(x => x.GetString("Test", "StringSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void StringSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual("default", settings.StringSettingWithDefault);
+            source.Verify(x => x.GetString("Test", "StringSettingWithDefault", "default"), Times.Once);
         }
     }
 }

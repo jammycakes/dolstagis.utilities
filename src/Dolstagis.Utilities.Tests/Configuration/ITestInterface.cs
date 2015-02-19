@@ -10,37 +10,38 @@ namespace Dolstagis.Utilities.Tests.Configuration
     [Prefix("Test")]
     public interface ITestInterface
     {
-        string StringSetting { get; }
-
-        int IntSetting { get; }
-
         bool BoolSetting { get; }
-
-        DateTime DateTimeSetting { get; }
-
-        long LongSetting { get; }
-
-        double DoubleSetting { get; }
-
-        IEmpty NotSupportedTypeSetting { get; }
-
-        void DoSomethingUnsupported();
-
-        [DefaultValue("default")]
-        string StringSettingWithDefault { get; }
-        [DefaultValue(10)]
-        int IntSettingWithDefault { get; }
-
-        [DefaultValue(10)]
-        long LongSettingWithDefault { get; }
 
         [DefaultValue(true)]
         bool BoolSettingWithDefault { get; }
 
-        [DefaultValue(Math.PI)]
-        double DoubleSettingWithDefault { get; }
+        DateTime DateTimeSetting { get; }
 
         [DefaultValue("2015-01-01 12:34:56")]
         DateTime DateTimeSettingWithDefault { get; }
+
+        double DoubleSetting { get; }
+
+        [DefaultValue(Math.PI)]
+        double DoubleSettingWithDefault { get; }
+
+        int IntSetting { get; }
+
+        [DefaultValue(10)]
+        int IntSettingWithDefault { get; }
+
+        long LongSetting { get; }
+
+        [DefaultValue(10)]
+        long LongSettingWithDefault { get; }
+
+        string StringSetting { get; }
+
+        [DefaultValue("default")]
+        string StringSettingWithDefault { get; }
+
+        IEmpty NotSupportedTypeSetting { get; }
+
+        void DoSomethingUnsupported();
     }
 }
