@@ -160,6 +160,12 @@ namespace Dolstagis.Utilities.Configuration
                     else if (propType == typeof(float)) {
                         constructorIL.Emit(OpCodes.Ldc_R4, Convert.ToSingle(d));
                     }
+                    else if (propType == typeof(Guid)) {
+                        var guid = d.ToString();
+                        var guidc = typeof(Guid).GetConstructor (new Type[] { typeof(string) });
+                        constructorIL.Emit(OpCodes.Ldstr, guid);
+                        constructorIL.Emit(OpCodes.Newobj, guidc);
+                    }
                     else if (propType == typeof(Int16)) {
                         constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToInt32(d));
                     }

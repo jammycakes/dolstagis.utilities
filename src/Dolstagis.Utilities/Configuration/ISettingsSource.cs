@@ -27,6 +27,10 @@ namespace Dolstagis.Utilities.Configuration
 
         float GetFloat(string ns, string name, float defaultValue);
 
+        Guid GetGuid(string ns, string name);
+
+        Guid GetGuid(string ns, string name, Guid defaultValue);
+
         int GetInt(string ns, string name);
 
         int GetInt(string ns, string name, int defaultValue);

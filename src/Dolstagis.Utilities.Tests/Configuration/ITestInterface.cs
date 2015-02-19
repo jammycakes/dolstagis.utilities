@@ -35,6 +35,11 @@ namespace Dolstagis.Utilities.Tests.Configuration
         [DefaultValue((float)Math.PI)]
         float FloatSettingWithDefault { get; }
 
+        Guid GuidSetting { get; }
+
+        [DefaultValue("01234567-89ab-cdef-0123-456789abcdef")]
+        Guid GuidSettingWithDefault { get; }
+
         int IntSetting { get; }
 
         [DefaultValue(10)]
