@@ -30,6 +30,11 @@ namespace Dolstagis.Utilities.Tests.Configuration
         [DefaultValue(Math.PI)]
         double DoubleSettingWithDefault { get; }
 
+        float FloatSetting { get; }
+
+        [DefaultValue((float)Math.PI)]
+        float FloatSettingWithDefault { get; }
+
         int IntSetting { get; }
 
         [DefaultValue(10)]

@@ -32,6 +32,7 @@ namespace Dolstagis.Utilities.Tests.Configuration
             source.Setup(x => x.GetChar("Test", "CharSetting")).Returns('a');
             source.Setup(x => x.GetDateTime("Test", "DateTimeSetting")).Returns(new DateTime(2015, 2, 18, 21, 24, 10));
             source.Setup(x => x.GetDouble("Test", "DoubleSetting")).Returns(Math.PI);
+            source.Setup(x => x.GetFloat("Test", "FloatSetting")).Returns((float)Math.PI);
             source.Setup(x => x.GetInt("Test", "IntSetting")).Returns(15);
             source.Setup(x => x.GetLong("Test", "LongSetting")).Returns(0x10000000000);
             source.Setup(x => x.GetShort("Test", "ShortSetting")).Returns(16384);
@@ -45,6 +46,8 @@ namespace Dolstagis.Utilities.Tests.Configuration
                 .Returns<string, string, DateTime>((a, b, c) => c);
             source.Setup(x => x.GetDouble(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>()))
                 .Returns<string, string, double>((a, b, c) => c);
+            source.Setup(x => x.GetFloat(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<float>()))
+                .Returns<string, string, float>((a, b, c) => c);
             source.Setup(x => x.GetInt(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Int32>()))
                 .Returns<string, string, Int32>((a, b, c) => c);
             source.Setup(x => x.GetLong(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Int64>()))
@@ -159,6 +162,20 @@ namespace Dolstagis.Utilities.Tests.Configuration
         {
             Assert.AreEqual(Math.PI, settings.DoubleSettingWithDefault);
             source.Verify(x => x.GetDouble("Test", "DoubleSettingWithDefault", Math.PI), Times.Once);
+        }
+
+        [Test]
+        public void FloatSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual((float)Math.PI, settings.FloatSetting);
+            source.Verify(x => x.GetFloat("Test", "FloatSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void FloatSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual((float)Math.PI, settings.FloatSettingWithDefault);
+            source.Verify(x => x.GetFloat("Test", "FloatSettingWithDefault", (float)Math.PI), Times.Once);
         }
 
         [Test]

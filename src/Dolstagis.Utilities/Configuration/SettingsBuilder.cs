@@ -157,6 +157,9 @@ namespace Dolstagis.Utilities.Configuration
                     else if (propType == typeof(double)) {
                         constructorIL.Emit(OpCodes.Ldc_R8, Convert.ToDouble(d));
                     }
+                    else if (propType == typeof(float)) {
+                        constructorIL.Emit(OpCodes.Ldc_R4, Convert.ToSingle(d));
+                    }
                     else if (propType == typeof(Int16)) {
                         constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToInt32(d));
                     }
