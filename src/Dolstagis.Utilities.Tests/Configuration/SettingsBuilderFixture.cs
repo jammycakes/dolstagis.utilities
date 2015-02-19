@@ -34,6 +34,18 @@ namespace Dolstagis.Utilities.Tests.Configuration
             source.Setup(x => x.GetDouble("Test", "DoubleSetting")).Returns(Math.PI);
             source.Setup(x => x.GetLong("Test", "LongSetting")).Returns(0x10000000000);
             source.Setup(x => x.GetDateTime("Test", "DateTimeSetting")).Returns(new DateTime(2015, 2, 18, 21, 24, 10));
+            source.Setup(x => x.GetString(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns<string, string, string>((a, b, c) => c);
+            source.Setup(x => x.GetInt(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Int32>()))
+                .Returns<string, string, Int32>((a, b, c) => c);
+            source.Setup(x => x.GetLong(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Int64>()))
+                .Returns<string, string, Int64>((a, b, c) => c);
+            source.Setup(x => x.GetBool(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns<string, string, bool>((a, b, c) => c);
+            source.Setup(x => x.GetDouble(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>()))
+                .Returns<string, string, double>((a, b, c) => c);
+            source.Setup(x => x.GetDateTime(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()))
+                .Returns<string, string, DateTime>((a, b, c) => c);
 
             module = SettingsCache.CreateModule();
             settingsBuilder = new SettingsBuilder<ITestInterface>(module);
@@ -123,6 +135,48 @@ namespace Dolstagis.Utilities.Tests.Configuration
             var obj = settings.NotSupportedTypeSetting;
             if (obj != null)
                 Assert.Fail();
+        }
+
+        [Test]
+        public void StringSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual("default", settings.StringSettingWithDefault);
+            source.Verify(x => x.GetString("Test", "StringSettingWithDefault", "default"), Times.Once);
+        }
+        [Test]
+        public void IntSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(10, settings.IntSettingWithDefault);
+            source.Verify(x => x.GetInt("Test", "IntSettingWithDefault", 10), Times.Once);
+        }
+
+        [Test]
+        public void LongSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(10L, settings.LongSettingWithDefault);
+            source.Verify(x => x.GetLong("Test", "LongSettingWithDefault", 10), Times.Once);
+        }
+
+        [Test]
+        public void BoolSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.IsTrue(settings.BoolSettingWithDefault);
+            source.Verify(x => x.GetBool("Test", "BoolSettingWithDefault", true), Times.Once);
+        }
+
+        [Test]
+        public void DoubleSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(Math.PI, settings.DoubleSettingWithDefault);
+            source.Verify(x => x.GetDouble("Test", "DoubleSettingWithDefault", Math.PI), Times.Once);
+        }
+
+        [Test]
+        public void DateTimeSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            var dt = new DateTime(2015, 1, 1, 12, 34, 56);
+            Assert.AreEqual(dt, settings.DateTimeSettingWithDefault);
+            source.Verify(x => x.GetDateTime("Test", "DateTimeSettingWithDefault", dt), Times.Once);
         }
     }
 }

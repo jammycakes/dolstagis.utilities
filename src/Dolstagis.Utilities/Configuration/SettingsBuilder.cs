@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -107,29 +108,63 @@ namespace Dolstagis.Utilities.Configuration
             return field;
         }
 
-        private static MethodInfo GetSettingsSourceMethod(Type type)
+        private static MethodInfo GetSettingsSourceMethod(Type type, bool expectDefault)
         {
             var methods = 
                 from m in typeof(ISettingsSource).GetMethods()
                 let parameters = m.GetParameters()
                 let returnType = m.ReturnType
-                where parameters.Length == 2
-                    && parameters.All(x => x.ParameterType == typeof(string))
-                    && m.Name.StartsWith("Get")
+                where parameters.Length == (expectDefault ? 3 : 2)
+                    && parameters[0].ParameterType == typeof(string)
+                    && parameters[1].ParameterType == typeof(string)
+                    && (!expectDefault || parameters[2].ParameterType == type)
+                    && returnType == type
                 select m;
 
-            return methods.FirstOrDefault(x => x.ReturnType == type);
+            return methods.FirstOrDefault();
         }
 
         private bool ImplementBackingFieldInit(PropertyInfo prop, FieldBuilder backingField)
         {
-            var settingsSourceMethod = GetSettingsSourceMethod(prop.PropertyType);
+            var defaultValue =
+                prop.GetCustomAttributes(typeof(DefaultValueAttribute), true)
+                .Cast<DefaultValueAttribute>()
+                .FirstOrDefault();
+            var propType = prop.PropertyType;
+
+            var settingsSourceMethod = GetSettingsSourceMethod(propType, defaultValue != null);
             if (settingsSourceMethod != null) {
                 constructorIL.Emit(OpCodes.Ldarg_0);
                 constructorIL.Emit(OpCodes.Ldarg_1);
                 constructorIL.Emit(OpCodes.Ldstr, prefix);
                 constructorIL.Emit(OpCodes.Ldstr, prop.Name);
-                constructorIL.Emit(OpCodes.Callvirt, GetSettingsSourceMethod(prop.PropertyType));
+                if (defaultValue != null) {
+                    var d = defaultValue.Value;
+                    if (propType == typeof(string)) {
+                        constructorIL.Emit(OpCodes.Ldstr, Convert.ToString(d));
+                    }
+                    else if (propType == typeof(Int32)) {
+                        constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToInt32(d));
+                    }
+                    else if (propType == typeof(Int64)) {
+                        constructorIL.Emit(OpCodes.Ldc_I8, Convert.ToInt64(d));
+                    }
+                    else if (propType == typeof(bool)) {
+                        constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToBoolean(d) ? 1 : 0);
+                    }
+                    else if (propType == typeof(double)) {
+                        constructorIL.Emit(OpCodes.Ldc_R8, Convert.ToDouble(d));
+                    }
+                    else if (propType == typeof(DateTime)) {
+                        var dt = Convert.ToDateTime(d);
+                        var dtc = typeof(DateTime).GetConstructor
+                            (new Type[] { typeof(long), typeof (DateTimeKind) });
+                        constructorIL.Emit(OpCodes.Ldc_I8, dt.Ticks);
+                        constructorIL.Emit(OpCodes.Ldc_I4, (int)dt.Kind);
+                        constructorIL.Emit(OpCodes.Newobj, dtc);
+                    }
+                }
+                constructorIL.Emit(OpCodes.Callvirt, settingsSourceMethod);
                 constructorIL.Emit(OpCodes.Stfld, backingField);
                 return true;
             }
