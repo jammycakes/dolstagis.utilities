@@ -178,6 +178,12 @@ namespace Dolstagis.Utilities.Configuration
                     else if (propType == typeof(string)) {
                         constructorIL.Emit(OpCodes.Ldstr, Convert.ToString(d));
                     }
+                    else if (propType == typeof(Uri)) {
+                        var uri = d.ToString();
+                        var uric = typeof(Uri).GetConstructor (new Type[] { typeof(string) });
+                        constructorIL.Emit(OpCodes.Ldstr, uri);
+                        constructorIL.Emit(OpCodes.Newobj, uric);
+                    }
                 }
                 constructorIL.Emit(OpCodes.Callvirt, settingsSourceMethod);
                 constructorIL.Emit(OpCodes.Stfld, backingField);

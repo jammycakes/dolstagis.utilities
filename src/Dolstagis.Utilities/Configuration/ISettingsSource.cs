@@ -46,5 +46,9 @@ namespace Dolstagis.Utilities.Configuration
         string GetString(string ns, string name);
 
         string GetString(string ns, string name, string defaultValue);
+
+        Uri GetUri(string ns, string name);
+
+        Uri GetUri(string ns, string name, Uri defaultValue);
     }
 }

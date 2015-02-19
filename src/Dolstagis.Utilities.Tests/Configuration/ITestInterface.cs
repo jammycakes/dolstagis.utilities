@@ -57,6 +57,11 @@ namespace Dolstagis.Utilities.Tests.Configuration
 
         string StringSetting { get; }
 
+        Uri UriSetting { get; }
+
+        [DefaultValue("https://github.com/jammycakes")]
+        Uri UriSettingWithDefault { get; }
+
         [DefaultValue("default")]
         string StringSettingWithDefault { get; }
 

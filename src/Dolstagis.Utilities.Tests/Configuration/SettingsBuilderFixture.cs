@@ -38,6 +38,7 @@ namespace Dolstagis.Utilities.Tests.Configuration
             source.Setup(x => x.GetLong("Test", "LongSetting")).Returns(0x10000000000);
             source.Setup(x => x.GetShort("Test", "ShortSetting")).Returns(16384);
             source.Setup(x => x.GetString("Test", "StringSetting")).Returns("test");
+            source.Setup(x => x.GetUri("Test", "UriSetting")).Returns(new Uri("https://github.com/jammycakes"));
 
             source.Setup(x => x.GetBool(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns<string, string, bool>((a, b, c) => c);
@@ -59,6 +60,8 @@ namespace Dolstagis.Utilities.Tests.Configuration
                 .Returns<string, string, Int16>((a, b, c) => c);
             source.Setup(x => x.GetString(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<string, string, string>((a, b, c) => c);
+            source.Setup(x => x.GetUri(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>()))
+                .Returns<string, string, Uri>((a, b, c) => c);
 
             module = SettingsCache.CreateModule();
             settingsBuilder = new SettingsBuilder<ITestInterface>(module);
@@ -249,6 +252,20 @@ namespace Dolstagis.Utilities.Tests.Configuration
         {
             Assert.AreEqual("default", settings.StringSettingWithDefault);
             source.Verify(x => x.GetString("Test", "StringSettingWithDefault", "default"), Times.Once);
+        }
+
+        [Test]
+        public void UriSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual(new Uri("https://github.com/jammycakes"), settings.UriSetting);
+            source.Verify(x => x.GetUri("Test", "UriSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void UriSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(new Uri("https://github.com/jammycakes"), settings.UriSettingWithDefault);
+            source.Verify(x => x.GetUri("Test", "UriSettingWithDefault", new Uri("https://github.com/jammycakes")), Times.Once);
         }
     }
 }
