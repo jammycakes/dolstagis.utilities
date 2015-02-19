@@ -11,6 +11,10 @@ namespace Dolstagis.Utilities.Configuration
 
         bool GetBool(string ns, string name, bool defaultValue);
 
+        char GetChar(string p1, string p2, char p3);
+
+        char GetChar(string p1, string p2);
+
         DateTime GetDateTime(string ns, string name);
 
         DateTime GetDateTime(string ns, string name, DateTime defaultValue);

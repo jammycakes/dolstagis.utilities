@@ -29,6 +29,7 @@ namespace Dolstagis.Utilities.Tests.Configuration
         {
             source = new Mock<ISettingsSource>();
             source.Setup(x => x.GetBool("Test", "BoolSetting")).Returns(true);
+            source.Setup(x => x.GetChar("Test", "CharSetting")).Returns('a');
             source.Setup(x => x.GetDateTime("Test", "DateTimeSetting")).Returns(new DateTime(2015, 2, 18, 21, 24, 10));
             source.Setup(x => x.GetDouble("Test", "DoubleSetting")).Returns(Math.PI);
             source.Setup(x => x.GetInt("Test", "IntSetting")).Returns(15);
@@ -37,6 +38,8 @@ namespace Dolstagis.Utilities.Tests.Configuration
 
             source.Setup(x => x.GetBool(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns<string, string, bool>((a, b, c) => c);
+            source.Setup(x => x.GetChar(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<char>()))
+                .Returns<string, string, char>((a, b, c) => c);
             source.Setup(x => x.GetDateTime(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()))
                 .Returns<string, string, DateTime>((a, b, c) => c);
             source.Setup(x => x.GetDouble(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>()))
@@ -109,6 +112,22 @@ namespace Dolstagis.Utilities.Tests.Configuration
             Assert.IsTrue(settings.BoolSettingWithDefault);
             source.Verify(x => x.GetBool("Test", "BoolSettingWithDefault", true), Times.Once);
         }
+
+        [Test]
+        public void CharSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual('a', settings.CharSetting);
+            source.Verify(x => x.GetChar("Test", "CharSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void CharSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual('a', settings.CharSettingWithDefault);
+            source.Verify(x => x.GetChar("Test", "CharSettingWithDefault", 'a'), Times.Once);
+        }
+
+
 
         [Test]
         public void DateTimeSettingIsRetrievedCorrectly()

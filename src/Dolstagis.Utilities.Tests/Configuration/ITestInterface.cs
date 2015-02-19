@@ -15,6 +15,11 @@ namespace Dolstagis.Utilities.Tests.Configuration
         [DefaultValue(true)]
         bool BoolSettingWithDefault { get; }
 
+        char CharSetting { get; }
+
+        [DefaultValue('a')]
+        char CharSettingWithDefault { get; }
+
         DateTime DateTimeSetting { get; }
 
         [DefaultValue("2015-01-01 12:34:56")]
