@@ -140,23 +140,11 @@ namespace Dolstagis.Utilities.Configuration
                 constructorIL.Emit(OpCodes.Ldstr, prop.Name);
                 if (defaultValue != null) {
                     var d = defaultValue.Value;
-                    if (propType == typeof(string)) {
-                        constructorIL.Emit(OpCodes.Ldstr, Convert.ToString(d));
-                    }
-                    else if (propType == typeof(Int32)) {
-                        constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToInt32(d));
-                    }
-                    else if (propType == typeof(Int64)) {
-                        constructorIL.Emit(OpCodes.Ldc_I8, Convert.ToInt64(d));
-                    }
-                    else if (propType == typeof(bool)) {
+                    if (propType == typeof(bool)) {
                         constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToBoolean(d) ? 1 : 0);
                     }
                     else if (propType == typeof(char)) {
-                        constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToInt32(d));
-                    }
-                    else if (propType == typeof(double)) {
-                        constructorIL.Emit(OpCodes.Ldc_R8, Convert.ToDouble(d));
+                        constructorIL.Emit(OpCodes.Ldc_I4_S, Convert.ToInt16(d));
                     }
                     else if (propType == typeof(DateTime)) {
                         var dt = Convert.ToDateTime(d);
@@ -165,6 +153,18 @@ namespace Dolstagis.Utilities.Configuration
                         constructorIL.Emit(OpCodes.Ldc_I8, dt.Ticks);
                         constructorIL.Emit(OpCodes.Ldc_I4, (int)dt.Kind);
                         constructorIL.Emit(OpCodes.Newobj, dtc);
+                    }
+                    else if (propType == typeof(double)) {
+                        constructorIL.Emit(OpCodes.Ldc_R8, Convert.ToDouble(d));
+                    }
+                    else if (propType == typeof(Int32)) {
+                        constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToInt32(d));
+                    }
+                    else if (propType == typeof(Int64)) {
+                        constructorIL.Emit(OpCodes.Ldc_I8, Convert.ToInt64(d));
+                    }
+                    else if (propType == typeof(string)) {
+                        constructorIL.Emit(OpCodes.Ldstr, Convert.ToString(d));
                     }
                 }
                 constructorIL.Emit(OpCodes.Callvirt, settingsSourceMethod);
