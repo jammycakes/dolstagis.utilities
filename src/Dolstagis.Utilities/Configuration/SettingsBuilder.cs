@@ -196,6 +196,12 @@ namespace Dolstagis.Utilities.Configuration
                     else if (propType == typeof(string)) {
                         constructorIL.Emit(OpCodes.Ldstr, Convert.ToString(d));
                     }
+                    else if (propType == typeof(TimeSpan)) {
+                        var ts = (TimeSpan)new TimeSpanConverter().ConvertFrom(d);
+                        var tsc = typeof(TimeSpan).GetConstructor(new Type[] { typeof(long) });
+                        constructorIL.Emit(OpCodes.Ldc_I8, ts.Ticks);
+                        constructorIL.Emit(OpCodes.Newobj, tsc);
+                    }
                     else if (propType == typeof(Uri)) {
                         var uri = d.ToString();
                         var uric = typeof(Uri).GetConstructor (new Type[] { typeof(string) });

@@ -62,6 +62,11 @@ namespace Dolstagis.Utilities.Tests.Configuration
 
         string StringSetting { get; }
 
+        TimeSpan TimeSpanSetting { get; }
+
+        [DefaultValue("1:00:00")]
+        TimeSpan TimeSpanSettingWithDefault { get; }
+
         Uri UriSetting { get; }
 
         [DefaultValue("https://github.com/jammycakes")]

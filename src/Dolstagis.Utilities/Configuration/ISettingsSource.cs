@@ -47,6 +47,10 @@ namespace Dolstagis.Utilities.Configuration
 
         string GetString(string ns, string name, string defaultValue);
 
+        TimeSpan GetTimeSpan(string ns, string name);
+
+        TimeSpan GetTimeSpan(string ns, string name, TimeSpan defaultValue);
+
         Uri GetUri(string ns, string name);
 
         Uri GetUri(string ns, string name, Uri defaultValue);

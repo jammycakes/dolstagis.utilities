@@ -39,6 +39,7 @@ namespace Dolstagis.Utilities.Tests.Configuration
             source.Setup(x => x.GetLong("Test", "LongSetting")).Returns(0x10000000000);
             source.Setup(x => x.GetShort("Test", "ShortSetting")).Returns(16384);
             source.Setup(x => x.GetString("Test", "StringSetting")).Returns("test");
+            source.Setup(x => x.GetTimeSpan("Test", "TimeSpanSetting")).Returns(TimeSpan.FromHours(1));
             source.Setup(x => x.GetUri("Test", "UriSetting")).Returns(new Uri("https://github.com/jammycakes"));
 
             source.Setup(x => x.GetBool(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
@@ -63,6 +64,8 @@ namespace Dolstagis.Utilities.Tests.Configuration
                 .Returns<string, string, Int16>((a, b, c) => c);
             source.Setup(x => x.GetString(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<string, string, string>((a, b, c) => c);
+            source.Setup(x => x.GetTimeSpan(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()))
+                .Returns<string, string, TimeSpan>((a, b, c) => c);
             source.Setup(x => x.GetUri(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>()))
                 .Returns<string, string, Uri>((a, b, c) => c);
 
@@ -269,6 +272,20 @@ namespace Dolstagis.Utilities.Tests.Configuration
         {
             Assert.AreEqual("default", settings.StringSettingWithDefault);
             source.Verify(x => x.GetString("Test", "StringSettingWithDefault", "default"), Times.Once);
+        }
+
+        [Test]
+        public void TimeSpanSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual(TimeSpan.FromHours(1), settings.TimeSpanSetting);
+            source.Verify(x => x.GetTimeSpan("Test", "TimeSpanSetting"), Times.Once, "Source was not called correctly");
+        }
+
+        [Test]
+        public void TimeSpanSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(TimeSpan.FromHours(1), settings.TimeSpanSettingWithDefault);
+            source.Verify(x => x.GetTimeSpan("Test", "TimeSpanSettingWithDefault", TimeSpan.FromHours(1)), Times.Once);
         }
 
         [Test]
