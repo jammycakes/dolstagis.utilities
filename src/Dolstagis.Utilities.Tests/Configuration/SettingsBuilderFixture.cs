@@ -32,6 +32,7 @@ namespace Dolstagis.Utilities.Tests.Configuration
             source.Setup(x => x.GetChar("Test", "CharSetting")).Returns('a');
             source.Setup(x => x.GetDateTime("Test", "DateTimeSetting")).Returns(new DateTime(2015, 2, 18, 21, 24, 10));
             source.Setup(x => x.GetDouble("Test", "DoubleSetting")).Returns(Math.PI);
+            source.Setup(x => x.GetEnum<DayOfWeek>("Test", "EnumSetting")).Returns(DayOfWeek.Thursday);
             source.Setup(x => x.GetFloat("Test", "FloatSetting")).Returns((float)Math.PI);
             source.Setup(x => x.GetGuid("Test", "GuidSetting")).Returns(new Guid("01234567-89ab-cdef-0123-456789abcdef"));
             source.Setup(x => x.GetInt("Test", "IntSetting")).Returns(15);
@@ -46,6 +47,8 @@ namespace Dolstagis.Utilities.Tests.Configuration
                 .Returns<string, string, char>((a, b, c) => c);
             source.Setup(x => x.GetDateTime(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>()))
                 .Returns<string, string, DateTime>((a, b, c) => c);
+            source.Setup(x => x.GetEnum<DayOfWeek>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DayOfWeek>()))
+                .Returns<string, string, DayOfWeek>((a, b, c) => c);
             source.Setup(x => x.GetDouble(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<double>()))
                 .Returns<string, string, double>((a, b, c) => c);
             source.Setup(x => x.GetFloat(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<float>()))
@@ -168,6 +171,20 @@ namespace Dolstagis.Utilities.Tests.Configuration
         {
             Assert.AreEqual(Math.PI, settings.DoubleSettingWithDefault);
             source.Verify(x => x.GetDouble("Test", "DoubleSettingWithDefault", Math.PI), Times.Once);
+        }
+
+        [Test]
+        public void EnumSettingIsRetrievedCorrectly()
+        {
+            Assert.AreEqual(DayOfWeek.Thursday, settings.EnumSetting);
+            source.Verify(x => x.GetEnum<DayOfWeek>("Test", "EnumSetting"), Times.Once);
+        }
+
+        [Test]
+        public void EnumSettingWithDefaultValueIsReturnedCorrectly()
+        {
+            Assert.AreEqual(DayOfWeek.Thursday, settings.EnumSettingWithDefault);
+            source.Verify(x => x.GetEnum<DayOfWeek>("Test", "EnumSettingWithDefault", DayOfWeek.Thursday), Times.Once);
         }
 
         [Test]

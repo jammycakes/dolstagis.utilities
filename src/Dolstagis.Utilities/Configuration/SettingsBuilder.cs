@@ -108,8 +108,17 @@ namespace Dolstagis.Utilities.Configuration
             return field;
         }
 
+        private static bool IsThisTheThirdParameterWeAreLookingFor(bool isEnum, ParameterInfo param, Type expectedType)
+        {
+            return isEnum
+                ? param.ParameterType.IsGenericParameter
+                : param.ParameterType == expectedType;
+        }
+
         private static MethodInfo GetSettingsSourceMethod(Type type, bool expectDefault)
         {
+            bool isEnum = type.IsEnum;
+
             var methods = 
                 from m in typeof(ISettingsSource).GetMethods()
                 let parameters = m.GetParameters()
@@ -117,11 +126,15 @@ namespace Dolstagis.Utilities.Configuration
                 where parameters.Length == (expectDefault ? 3 : 2)
                     && parameters[0].ParameterType == typeof(string)
                     && parameters[1].ParameterType == typeof(string)
-                    && (!expectDefault || parameters[2].ParameterType == type)
-                    && returnType == type
+                    && (!expectDefault || IsThisTheThirdParameterWeAreLookingFor(isEnum, parameters[2], type))
+                    && (isEnum ? m.Name == "GetEnum" : returnType == type)
                 select m;
 
-            return methods.FirstOrDefault();
+            var method = methods.FirstOrDefault();
+            if (method == null) return null;
+            if (isEnum)
+                method = method.MakeGenericMethod(type);
+            return method;
         }
 
         private bool ImplementBackingFieldInit(PropertyInfo prop, FieldBuilder backingField)
@@ -140,6 +153,11 @@ namespace Dolstagis.Utilities.Configuration
                 constructorIL.Emit(OpCodes.Ldstr, prop.Name);
                 if (defaultValue != null) {
                     var d = defaultValue.Value;
+
+                    if (propType.IsEnum) {
+                        propType = propType.GetEnumUnderlyingType();
+                    }
+
                     if (propType == typeof(bool)) {
                         constructorIL.Emit(OpCodes.Ldc_I4, Convert.ToBoolean(d) ? 1 : 0);
                     }

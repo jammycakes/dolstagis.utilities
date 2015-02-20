@@ -50,5 +50,9 @@ namespace Dolstagis.Utilities.Configuration
         Uri GetUri(string ns, string name);
 
         Uri GetUri(string ns, string name, Uri defaultValue);
+
+        T GetEnum<T>(string ns, string name) where T : struct;
+
+        T GetEnum<T>(string ns, string name, T defaultValue) where T : struct;
     }
 }

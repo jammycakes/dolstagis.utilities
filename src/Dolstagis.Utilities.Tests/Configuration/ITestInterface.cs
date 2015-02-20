@@ -25,6 +25,11 @@ namespace Dolstagis.Utilities.Tests.Configuration
         [DefaultValue("2015-01-01 12:34:56")]
         DateTime DateTimeSettingWithDefault { get; }
 
+        DayOfWeek EnumSetting { get; }
+
+        [DefaultValue(DayOfWeek.Thursday)]
+        DayOfWeek EnumSettingWithDefault { get; }
+
         double DoubleSetting { get; }
 
         [DefaultValue(Math.PI)]
